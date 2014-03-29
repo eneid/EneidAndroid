@@ -3,12 +3,9 @@ package fr.eneid.android.eneidandroid.app;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.BitmapShader;
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
-import android.graphics.Shader;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,7 +16,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
+
+import fr.eneid.android.eneidandroid.beans.Message;
 
 public class TimeLineAdapter extends ArrayAdapter<Message> {
 
@@ -45,11 +46,37 @@ public class TimeLineAdapter extends ArrayAdapter<Message> {
         TextView message = (TextView) rowLayout.findViewById(R.id.message);
         TextView name = (TextView) rowLayout.findViewById(R.id.name);
 
-        new RetreivePictures().execute(tMessage.getPicUrl());
 
-        message.setText(tMessage.getContent());
-        name.setText(tMessage.getName());
+        new RetreivePictures().execute("http://www.gravatar.com/avatar/" + toMD5Hash(tMessage.getAuthor().getEmail()) + "?size=100");
+
+        message.setText(tMessage.getContents());
+        name.setText(tMessage.getAuthor().getName());
         return rowLayout;
+    }
+
+    private String toMD5Hash(String s) {
+        final String MD5 = "MD5";
+        try {
+            // Create MD5 Hash
+            MessageDigest digest = java.security.MessageDigest
+                    .getInstance(MD5);
+            digest.update(s.getBytes());
+            byte messageDigest[] = digest.digest();
+
+            // Create Hex String
+            StringBuilder hexString = new StringBuilder();
+            for (byte aMessageDigest : messageDigest) {
+                String h = Integer.toHexString(0xFF & aMessageDigest);
+                while (h.length() < 2)
+                    h = "0" + h;
+                hexString.append(h);
+            }
+            return hexString.toString();
+
+        } catch (NoSuchAlgorithmException e) {
+            Log.e("TOMD5", e.getMessage());
+        }
+        return "";
     }
 
 

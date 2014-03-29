@@ -1,6 +1,7 @@
 package fr.eneid.android.eneidandroid.app;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -9,32 +10,32 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.eneid.android.eneidandroid.beans.Message;
+
 
 public class MainActivity extends ActionBarActivity {
+
+    private ListView mList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ListView mList = (ListView) findViewById(R.id.timeLine);
+        mList = (ListView) findViewById(R.id.timeLine);
 
-        List<Message> messages = new ArrayList<Message>();
-
-        messages.add(new Message(1, "Sébastian Lemerdy", "http://www.gravatar.com/avatar/492d722c2d77a5816f0e600bd2c3a9f5?size=100", "Il va bien"));
-        messages.add(new Message(2, "Eric Lemerdy", "http://www.gravatar.com/avatar/492d722c2d77a5816f0e600bd2c3a9f5?size=100", "Il a mangé"));
-        messages.add(new Message(3, "Lapetite Lemerdy", "http://www.gravatar.com/avatar/492d722c2d77a5816f0e600bd2c3a9f5?size=100", "Il est fatigué"));
-        messages.add(new Message(4, "Bogdan", "http://www.gravatar.com/avatar/492d722c2d77a5816f0e600bd2c3a9f5?size=100", "Il a mangé"));
-        messages.add(new Message(1, "Bogdan", "http://www.gravatar.com/avatar/492d722c2d77a5816f0e600bd2c3a9f5?size=100", "Il va bien"));
-        messages.add(new Message(1, "Bogdan", "http://www.gravatar.com/avatar/492d722c2d77a5816f0e600bd2c3a9f5?size=100", "Il dormait"));
-        messages.add(new Message(2, "Bogdan", "http://www.gravatar.com/avatar/492d722c2d77a5816f0e600bd2c3a9f5?size=100", "Il va bien"));
-        messages.add(new Message(2, "Marouane", "http://www.gravatar.com/avatar/492d722c2d77a5816f0e600bd2c3a9f5?size=100", "Il va bien"));
-
-        TimeLineAdapter timeLineAdapter = new TimeLineAdapter(this, messages);
-        mList.setAdapter(timeLineAdapter);
+        new TimeLineTask().execute("http://eneid-api.herokuapp.com/api/timeline", "user", "password");
 
         Button action = (Button) findViewById(R.id.action);
         action.setOnClickListener(new View.OnClickListener() {
@@ -66,6 +67,58 @@ public class MainActivity extends ActionBarActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    // AsyncTask To get TimeLine Data
+    private class TimeLineTask extends AsyncTask<String, Void, List<Message>> {
+
+        @Override
+        protected List<Message> doInBackground(String... strings) {
+            List<Message> messages = new ArrayList<Message>();
+
+
+            HttpClient httpclient = new DefaultHttpClient();
+            HttpGet httpGet = new HttpGet(strings[0]);
+
+            String email = strings[1];
+            String password = strings[2];
+
+//            StringBuilder total = null;
+//            try {
+//                String token = Base64.encodeToString((email + ":" + password).getBytes("UTF-8"), Base64.DEFAULT);
+//                httpGet.setHeader(new BasicHeader("Authorization", "Basic " + token));
+//
+//                HttpResponse response = httpclient.execute(httpGet);
+//                HttpEntity ht = response.getEntity();
+//                BufferedHttpEntity buf = new BufferedHttpEntity(ht);
+//                InputStream is = buf.getContent();
+//                BufferedReader r = new BufferedReader(new InputStreamReader(is));
+//                total = new StringBuilder();
+//                String line;
+//                while ((line = r.readLine()) != null) {
+//                    total.append(line);
+//                }
+//            } catch (IOException e) {
+//                Log.e("TimeLineTask", e.getMessage());
+//            }
+
+            String total = "[{\"id\":1,\"author\":{\"email\":\"jj@gmail.com\",\"firstName\":\"Jean jacques\",\"name\":\"Martin\"},\"date\":1396127618091,\"contents\":\"Il est mort !\",\"action\":null}]";
+
+            if(total != null) {
+                Gson gson = new Gson();
+                Type messageType = new TypeToken<ArrayList<Message>>(){}.getType();
+                messages = gson.fromJson(total.toString(), messageType);
+            }
+
+
+            return messages;
+        }
+
+        @Override
+        protected void onPostExecute(List<Message> messages) {
+            TimeLineAdapter timeLineAdapter = new TimeLineAdapter(MainActivity.this, messages);
+            mList.setAdapter(timeLineAdapter);
+        }
     }
 
 }
