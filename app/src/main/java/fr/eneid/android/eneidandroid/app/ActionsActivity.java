@@ -16,14 +16,20 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
+import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class ActionsActivity extends ActionBarActivity implements View.OnClickListener {
@@ -85,19 +91,26 @@ public class ActionsActivity extends ActionBarActivity implements View.OnClickLi
             actionId = 5;
         }
         showProgress(true);
-        new TimeLineTask().execute(actionId);
+        new ActionsTask().execute(actionId);
     }
 
-    // AsyncTask To get TimeLine Data
-    private class TimeLineTask extends AsyncTask<Integer, Void, Integer> {
+    // AsyncTask To Post Action
+    private class ActionsTask extends AsyncTask<Integer, Void, Integer> {
 
         @Override
         protected Integer doInBackground(Integer... actionsId) {
             try {
-                String token = Base64.encodeToString(("user:password").getBytes("UTF-8"), Base64.DEFAULT);
+                String token = Base64.encodeToString(("sebastian.lemerdy@gmail.com:password").getBytes("UTF-8"), Base64.DEFAULT);
                 HttpClient httpClient = new DefaultHttpClient();
-                HttpPost httpPost = new HttpPost("http://eneid-api.herokuapp.com/api/timeline/action/" + actionsId[0]);
-                httpPost.setHeader(new BasicHeader("Authorization", "Basic " + token));
+                HttpPost httpPost = new HttpPost("http://eneid-api.herokuapp.com/api/timeline/action");
+
+                //Add id in post body
+                List<NameValuePair> postBody = new ArrayList<NameValuePair>();
+                postBody.add(new BasicNameValuePair("id", actionsId[0].toString()));
+                httpPost.setEntity(new UrlEncodedFormEntity(postBody));
+//                httpPost.setEntity(new ByteArrayEntity(postMessage.toString().getBytes("UTF8")));
+
+                httpPost.addHeader(new BasicHeader("Authorization", "Basic " + token));
                 HttpResponse response = httpClient.execute(httpPost);
                 int statusCode = response.getStatusLine().getStatusCode();
                 return statusCode;
@@ -118,7 +131,7 @@ public class ActionsActivity extends ActionBarActivity implements View.OnClickLi
         protected void onPostExecute(Integer statusCode) {
             showProgress(false);
             if(statusCode != null) {
-                Toast.makeText(getApplicationContext(), "Message envoyé", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Message envoyé" + statusCode, Toast.LENGTH_LONG).show();
             }
         }
     }
