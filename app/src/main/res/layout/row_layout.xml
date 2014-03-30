@@ -3,7 +3,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="?android:attr/listPreferredItemHeight"
-    android:padding="6dip" >
+    android:background="@drawable/title_background">
 
     <ImageView
         android:id="@+id/pic"
@@ -38,6 +38,18 @@
         android:layout_toRightOf="@id/pic"
         android:gravity="center_vertical"
         android:text="Full name"
-        android:textSize="12sp" />
+        android:textSize="15sp" />
 
+    <TextView
+        android:id="@+id/date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@id/name"
+        android:gravity="right"
+        android:layout_marginTop="3dp"
+        android:layout_marginRight="5dip"
+        android:textSize="10dip"
+        android:textColor="#10bcc9"
+        android:textStyle="bold"/>
 </RelativeLayout>

@@ -18,6 +18,7 @@ import android.widget.TextView;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import fr.eneid.android.eneidandroid.beans.Message;
@@ -45,12 +46,14 @@ public class TimeLineAdapter extends ArrayAdapter<Message> {
         pic = (ImageView) rowLayout.findViewById(R.id.pic);
         TextView message = (TextView) rowLayout.findViewById(R.id.message);
         TextView name = (TextView) rowLayout.findViewById(R.id.name);
+        TextView date = (TextView) rowLayout.findViewById(R.id.date);
 
 
         new RetreivePictures().execute("http://www.gravatar.com/avatar/" + toMD5Hash(tMessage.getAuthor().getEmail()) + "?size=100");
 
         message.setText(tMessage.getContents());
         name.setText(tMessage.getAuthor().getName());
+        date.setText(new SimpleDateFormat("dd/MM/yyyy hh:mm").format(tMessage.getDate()));
         return rowLayout;
     }
 
@@ -80,14 +83,13 @@ public class TimeLineAdapter extends ArrayAdapter<Message> {
     }
 
 
-
     private class RetreivePictures extends AsyncTask<String, Void, Bitmap> {
 
         private Exception exception;
 
         protected Bitmap doInBackground(String... urls) {
             try {
-                URL url= new URL(urls[0]);
+                URL url = new URL(urls[0]);
                 Bitmap bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
                 return bitmap;
             } catch (Exception e) {
@@ -101,26 +103,32 @@ public class TimeLineAdapter extends ArrayAdapter<Message> {
         }
 
         public Bitmap getRoundedShape(Bitmap scaleBitmapImage) {
-            int targetWidth = 50;
-            int targetHeight = 50;
-            Bitmap targetBitmap = Bitmap.createBitmap(targetWidth,
-                    targetHeight,Bitmap.Config.ARGB_8888);
+            if (scaleBitmapImage != null) {
 
-            Canvas canvas = new Canvas(targetBitmap);
-            Path path = new Path();
-            path.addCircle(((float) targetWidth - 1) / 2,
-                    ((float) targetHeight - 1) / 2,
-                    (Math.min(((float) targetWidth),
-                            ((float) targetHeight)) / 2),
-                    Path.Direction.CCW);
+                int targetWidth = 50;
+                int targetHeight = 50;
+                Bitmap targetBitmap = Bitmap.createBitmap(targetWidth,
+                        targetHeight, Bitmap.Config.ARGB_8888);
 
-            canvas.clipPath(path);
-            Bitmap sourceBitmap = scaleBitmapImage;
-            canvas.drawBitmap(sourceBitmap,
-                    new Rect(0, 0, sourceBitmap.getWidth(),
-                            sourceBitmap.getHeight()),
-                    new Rect(0, 0, targetWidth, targetHeight), null);
-            return targetBitmap;
+                Canvas canvas = new Canvas(targetBitmap);
+                Path path = new Path();
+                path.addCircle(((float) targetWidth - 1) / 2,
+                        ((float) targetHeight - 1) / 2,
+                        (Math.min(((float) targetWidth),
+                                ((float) targetHeight)) / 2),
+                        Path.Direction.CCW
+                );
+
+                canvas.clipPath(path);
+                Bitmap sourceBitmap = scaleBitmapImage;
+                canvas.drawBitmap(sourceBitmap,
+                        new Rect(0, 0, sourceBitmap.getWidth(),
+                                sourceBitmap.getHeight()),
+                        new Rect(0, 0, targetWidth, targetHeight), null
+                );
+                return targetBitmap;
+            }
+            return scaleBitmapImage;
         }
     }
 }

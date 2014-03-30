@@ -102,7 +102,13 @@ public class MainActivity extends ActionBarActivity {
 //                Log.e("TimeLineTask", e.getMessage());
 //            }
 
-            String total = "[{\"id\":1,\"author\":{\"email\":\"jj@gmail.com\",\"firstName\":\"Jean jacques\",\"name\":\"Martin\"},\"date\":1396127618091,\"contents\":\"Il est mort !\",\"action\":null}]";
+            String total = "[{\"id\":1,\"author\":{\"email\":\"jj@gmail.com\",\"firstName\":\"Jean jacques\",\"name\":\"Martin\"},\"date\":1396127618091,\"contents\":\"Il a mangé !\",\"action\":null}," +
+                    "{\"id\":2,\"author\":{\"email\":\"jj@gmail.com\",\"firstName\":\"Jean jacques\",\"name\":\"Cousine\"},\"date\":1396127618091,\"contents\":\"Il va bien !\",\"action\":null}," +
+                    "{\"id\":3,\"author\":{\"email\":\"jj@gmail.com\",\"firstName\":\"Jean jacques\",\"name\":\"Toto\"},\"date\":1396127618091,\"contents\":\"Il a besoin d'argent !\",\"action\":null}," +
+                    "{\"id\":4,\"author\":{\"email\":\"jj@gmail.com\",\"firstName\":\"Jean jacques\",\"name\":\"Le snack d'en face\"},\"date\":1396127618091,\"contents\":\"Il a besoin d'un Kebab\",\"action\":null}," +
+                    "{\"id\":5,\"author\":{\"email\":\"jj@gmail.com\",\"firstName\":\"Jean jacques\",\"name\":\"Le boulanger\"},\"date\":1396127618091,\"contents\":\"Et oui il va bien :)\",\"action\":null}" +
+
+                    "]";
 
             if(total != null) {
                 Gson gson = new Gson();

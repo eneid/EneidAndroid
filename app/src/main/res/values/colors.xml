@@ -3,7 +3,8 @@
     <color name="orange4">#ee8d03</color>
     <color name="orange5">#ffeeae0a</color>
     <color name="orange6">#ffee7c0e</color>
-    <color name="grey05">#ffefffee</color>
+    <color name="background">#ffe1dcd8</color>
+    <color name="loading">#cce1dcd8</color>
     <color name="yellow1">#ffffec00</color>
     <color name="yellow2">#ffffe569</color>
     <color name="blue2">#0064cd</color>
